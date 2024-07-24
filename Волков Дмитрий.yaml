@@ -1,0 +1,166 @@
+openapi: 3.0.3
+info:
+  title: База данных книг в библиотеке
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+paths:
+  /books:
+    get:
+      summary: Показать список всех книг с возможностью фильтрации по жанру
+      tags:
+        - Books
+      operationId: getAllBooks
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - name: genre
+          in: query
+          required: false
+          schema:
+            type: string
+          example: Научная фантастика
+      responses:
+        '200':
+          description: Успешная обработка запроса
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+        '404':
+          description: Не найдено
+        '400':
+          description: Некорректный запрос
+    post:
+      summary: Создать новую книгу
+      tags:
+        - Books
+      operationId: createNewBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '201':
+          description: Создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Некорректный запрос
+  /books/{id}:
+    get:
+      summary: Получение информации о книге по ID
+      tags:
+        - Books
+      operationId: getBookById
+      parameters:
+        - name: id
+          example: 7775566
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешная обработка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Не найдено
+        '400':
+          description: Некорректный запрос  
+    patch:
+      summary: Редактирование книги по ID
+      tags:
+        - Books
+      operationId: updateBookById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Обновлено
+        '404':
+          description: Не найдено
+        '400':
+          description: Некорректный запрос
+    delete:
+      summary: Удаление книги по ID
+      tags:
+        - Books
+      operationId: deleteBookById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Успешно удалено
+          content:
+            application/json: {}
+        '404':
+          description: Не найдено
+components:
+  schemas:
+    Book:
+      type: object
+      required:
+        - title
+        - genre
+      properties:
+        id:
+          type: integer
+          example: 7775566
+        title:
+          type: string
+          example: Новая книга о птичках
+        genre:
+          type: string
+          example: Научная фантастика
+        year:
+          type: string
+          format: integer
+          example: 1985
+        authorID:
+          type: integer
+          example: Виталий Бианки
+  parameters:
+    page:
+      name: page
+      in: query
+      required: false
+      description: Номер страницы для полученя
+      schema:
+        type: integer
+        minimum: 0
+        example: 3
+    size:
+      name: size
+      in: query
+      required: false
+      description: Количество книг на странице
+      schema:
+        type: integer
+        minimum: 0
+        example: 20
+          
+          
